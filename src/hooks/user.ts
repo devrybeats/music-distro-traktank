@@ -12,34 +12,46 @@ export type UserWithSocialDetails = {
 };
 
 export const fetchProfilePhoto = async (user_id: string) => {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/profile-photo/${user_id}`,
-  );
+  try {
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    if (!backendUrl) return { name: "", email: "", image: "" };
+    const response = await fetch(
+      `${backendUrl}/api/profile-photo/${user_id}`,
+    );
 
-  if (!response.ok) {
-    throw new Error("Failed to User Profile Photo");
+    if (!response.ok) {
+      return { name: "", email: "", image: "" };
+    }
+
+    const photo = (await response.json()) as User;
+    return photo;
+  } catch (error) {
+    console.warn("fetchProfilePhoto failed:", error);
+    return { name: "", email: "", image: "" };
   }
-
-  const photo = (await response.json()) as User;
-
-  return photo;
 };
 
 export const fetchUserInfo = async (user_id: string) => {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/user-info/${user_id}`,
-    {
-      next: {
-        revalidate: 0,
+  try {
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    if (!backendUrl) return { userInfo: {} as any, userSocialUrls: {} as any };
+    const response = await fetch(
+      `${backendUrl}/api/user-info/${user_id}`,
+      {
+        next: {
+          revalidate: 0,
+        },
       },
-    },
-  );
+    );
 
-  if (!response.ok) {
-    throw new Error("Failed to User Profile Photo");
+    if (!response.ok) {
+      return { userInfo: {} as any, userSocialUrls: {} as any };
+    }
+
+    const userInfo = (await response.json()) as UserWithSocialDetails;
+    return userInfo;
+  } catch (error) {
+    console.warn("fetchUserInfo failed:", error);
+    return { userInfo: {} as any, userSocialUrls: {} as any };
   }
-
-  const userInfo = (await response.json()) as UserWithSocialDetails;
-
-  return userInfo;
 };

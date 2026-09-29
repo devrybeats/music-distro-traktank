@@ -1,0 +1,128 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User account information and profile details",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "name": { "type": "string" },
+        "role": { "type": "string", "enum": ["artist", "label", "admin"] },
+        "avatarUrl": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "email"]
+    },
+    "AudioRelease": {
+      "title": "AudioRelease",
+      "description": "Audio music release distributed to DSP platforms",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "artist": { "type": "string" },
+        "genre": { "type": "string" },
+        "label": { "type": "string" },
+        "upc": { "type": "string" },
+        "releaseDate": { "type": "string" },
+        "status": { "type": "string", "enum": ["draft", "submitted", "approved", "delivered", "live"] },
+        "coverUrl": { "type": "string" },
+        "stores": { "type": "array", "items": { "type": "string" } },
+        "tracksCount": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "title", "artist", "status"]
+    },
+    "VideoRelease": {
+      "title": "VideoRelease",
+      "description": "Music video release distributed to video streaming platforms",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "artist": { "type": "string" },
+        "isrc": { "type": "string" },
+        "platforms": { "type": "array", "items": { "type": "string" } },
+        "status": { "type": "string", "enum": ["draft", "submitted", "delivered", "live"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "title", "status"]
+    },
+    "Subscription": {
+      "title": "Subscription",
+      "description": "User subscription plan and expiration",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "plan": { "type": "string" },
+        "status": { "type": "string" },
+        "expiresAt": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "plan"]
+    },
+    "Ticket": {
+      "title": "Ticket",
+      "description": "Support tickets raised by artists",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "subject": { "type": "string" },
+        "category": { "type": "string" },
+        "priority": { "type": "string" },
+        "status": { "type": "string" },
+        "message": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "subject", "message"]
+    },
+    "RoyaltyReport": {
+      "title": "RoyaltyReport",
+      "description": "Streaming royalties and earnings breakdown",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "releaseTitle": { "type": "string" },
+        "store": { "type": "string" },
+        "streams": { "type": "number" },
+        "earnings": { "type": "number" },
+        "currency": { "type": "string" },
+        "period": { "type": "string" }
+      },
+      "required": ["id", "userId", "streams", "earnings"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "UserProfile" },
+      "description": "User accounts. Only owner can read/write."
+    },
+    "/releases/{releaseId}": {
+      "schema": { "$ref": "AudioRelease" },
+      "description": "Audio releases. Owner can manage."
+    },
+    "/video_releases/{videoId}": {
+      "schema": { "$ref": "VideoRelease" },
+      "description": "Music video releases. Owner can manage."
+    },
+    "/subscriptions/{subId}": {
+      "schema": { "$ref": "Subscription" },
+      "description": "Subscription records. Owner can read."
+    },
+    "/tickets/{ticketId}": {
+      "schema": { "$ref": "Ticket" },
+      "description": "Support tickets. Owner can read and create."
+    },
+    "/royalties/{reportId}": {
+      "schema": { "$ref": "RoyaltyReport" },
+      "description": "Royalty reports. Owner can read."
+    }
+  }
+}

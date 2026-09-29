@@ -3,7 +3,7 @@ import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { generatePasswordResetToken } from "@/server/services/token/generateToken";
 import { passwordResetMail } from "@/server/services/mail/";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 export const passwordRouter = createTRPCRouter({
   sendPasswordResetToken: publicProcedure

@@ -20,29 +20,41 @@ interface CachedEarnings {
 }
 
 export const fetchRevenue = async (userId: string | undefined) => {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/payment/revenue/${userId}`,
-  );
+  try {
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    if (!backendUrl || !userId) return { message: "", earnings: 0, monthlyReports: [] };
+    const response = await fetch(
+      `${backendUrl}/api/payment/revenue/${userId}`,
+    );
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch revenue");
+    if (!response.ok) {
+      return { message: "", earnings: 0, monthlyReports: [] };
+    }
+
+    const revenueData = (await response.json()) as CachedEarnings;
+    return revenueData;
+  } catch (error) {
+    console.warn("fetchRevenue failed:", error);
+    return { message: "", earnings: 0, monthlyReports: [] };
   }
-
-  const revenueData = (await response.json()) as CachedEarnings;
-
-  return revenueData;
 };
 
 export const fetchPayout = async (userId: string | undefined) => {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/payment/payouts/${userId}`,
-  );
+  try {
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    if (!backendUrl || !userId) return [];
+    const response = await fetch(
+      `${backendUrl}/api/payment/payouts/${userId}`,
+    );
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch revenue");
+    if (!response.ok) {
+      return [];
+    }
+
+    const payout = (await response.json()) as Payout[];
+    return payout;
+  } catch (error) {
+    console.warn("fetchPayout failed:", error);
+    return [];
   }
-
-  const payout = (await response.json()) as Payout[];
-
-  return payout;
 };

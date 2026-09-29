@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { verifyEMail } from "@/server/services/mail";
 import { generateEmailVerificationToken } from "@/server/services/token/generateToken";
 

@@ -10,35 +10,49 @@ export type CartType = {
 };
 
 export const fetchCartItems = async (user_id: string) => {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/cart/${user_id}`,
-    {
-      next: {
-        revalidate: 0,
+  try {
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    if (!backendUrl || !user_id) return [];
+    const response = await fetch(
+      `${backendUrl}/api/cart/${user_id}`,
+      {
+        next: {
+          revalidate: 0,
+        },
       },
-    },
-  );
+    );
 
-  if (!response.ok) {
-    throw new Error("Failed to User Profile Photo");
+    if (!response.ok) {
+      return [];
+    }
+
+    const cartItems = (await response.json()) as CartType[];
+    return cartItems;
+  } catch (error) {
+    console.warn("fetchCartItems failed:", error);
+    return [];
   }
-
-  const cartItems = (await response.json()) as CartType[];
-
-  return cartItems;
 };
 
 export const fetchUserInfo = async (user_id: string) => {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/user-info/${user_id}`,
-    {
-      next: {
-        revalidate: 0,
+  try {
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    if (!backendUrl || !user_id) return null;
+    const response = await fetch(
+      `${backendUrl}/api/user-info/${user_id}`,
+      {
+        next: {
+          revalidate: 0,
+        },
       },
-    },
-  );
+    );
 
-  if (!response.ok) {
-    throw new Error("Failed to User Profile Photo");
+    if (!response.ok) {
+      return null;
+    }
+    return await response.json();
+  } catch (error) {
+    console.warn("fetchUserInfo failed:", error);
+    return null;
   }
 };

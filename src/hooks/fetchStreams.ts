@@ -4,48 +4,69 @@ interface StreamData {
   streams: number;
 }
 export const fetchStreamsByAudioId = async (userId: string | undefined) => {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/all-streams/${userId}?timeRange=7days`,
-  );
+  try {
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    if (!backendUrl || !userId) return {};
+    const response = await fetch(
+      `${backendUrl}/api/all-streams/${userId}?timeRange=7days`,
+    );
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch streams by audio ID");
+    if (!response.ok) {
+      return {};
+    }
+
+    const streamData = (await response.json()) as Record<
+      string,
+      { date: string; total: number }[]
+    >;
+
+    return streamData;
+  } catch (error) {
+    console.warn("fetchStreamsByAudioId failed:", error);
+    return {};
   }
-
-  const streamData = (await response.json()) as Record<
-    string,
-    { date: string; total: number }[]
-  >;
-
-  return streamData;
 };
 
 export const fetchByAudioStreams = async (userId: string | undefined) => {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/streams/audio-streams/${userId}`,
-  );
+  try {
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    if (!backendUrl || !userId) return {};
+    const response = await fetch(
+      `${backendUrl}/api/streams/audio-streams/${userId}`,
+    );
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch audio streams");
+    if (!response.ok) {
+      return {};
+    }
+
+    const streamData = (await response.json()) as Record<
+      string,
+      { title: string; totalStreams: number; cover: string }
+    >;
+
+    return streamData;
+  } catch (error) {
+    console.warn("fetchByAudioStreams failed:", error);
+    return {};
   }
-
-  const streamData = (await response.json()) as Record<
-    string,
-    { title: string; totalStreams: number; cover: string }
-  >;
-
-  return streamData;
 };
 
 export const fetchAllStreamsCountry = async (userId: string | undefined) => {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/streams/country/${userId}`,
-  );
+  try {
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    if (!backendUrl || !userId) return [];
+    const response = await fetch(
+      `${backendUrl}/api/streams/country/${userId}`,
+    );
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch all streams by country");
+    if (!response.ok) {
+      return [];
+    }
+
+    const streamData = (await response.json()) as StreamData[] | undefined;
+    return streamData ?? [];
+  } catch (error) {
+    console.warn("fetchAllStreamsCountry failed:", error);
+    return [];
   }
-
-  const streamData = (await response.json()) as StreamData[] | undefined;
-  return streamData;
 };

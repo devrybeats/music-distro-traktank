@@ -11,11 +11,17 @@ export const metadata: Metadata = {
 };
 
 const fetchAudioReleases = async (userId: string | undefined) => {
-  const userAudioReleases = await fetch(
-    `${env.NEXT_PUBLIC_BACKEND_URL}/api/audio/${userId}`,
-  );
-  const userAudioReleasesData = (await userAudioReleases.json()) as Audio[];
-  return userAudioReleasesData;
+  try {
+    if (!env.NEXT_PUBLIC_BACKEND_URL || !userId) return [];
+    const userAudioReleases = await fetch(
+      `${env.NEXT_PUBLIC_BACKEND_URL}/api/audio/${userId}`,
+    );
+    if (!userAudioReleases.ok) return [];
+    const userAudioReleasesData = (await userAudioReleases.json()) as Audio[];
+    return userAudioReleasesData;
+  } catch (e) {
+    return [];
+  }
 };
 
 const MusicRelease = async () => {

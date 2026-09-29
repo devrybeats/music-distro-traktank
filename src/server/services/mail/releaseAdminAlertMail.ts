@@ -1,7 +1,9 @@
 import * as sgMail from "@sendgrid/mail";
 import { env } from "@/env";
 
-sgMail.setApiKey(env.SEND_GRID_API_KEY);
+if (env.SEND_GRID_API_KEY) {
+  sgMail.setApiKey(env.SEND_GRID_API_KEY);
+}
 
 export const sendMusicReleaseAlertToAdmin = async () => {
   const msg = {

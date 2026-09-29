@@ -1,0 +1,7 @@
+{
+  "name": "We Plug Music",
+  "description": "Music distribution and promotion services for independent artists",
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

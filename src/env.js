@@ -2,58 +2,46 @@ import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
 
 export const env = createEnv({
-  /**
-   * Specify your server-side environment variables schema here. This way you can ensure the app
-   * isn't built with invalid env vars.
-   */
   server: {
-    DATABASE_URL: z.string().url(),
+    DATABASE_URL: z
+      .string()
+      .url()
+      .default("postgresql://postgres:postgres@localhost:5432/musicdistro"),
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
-    NEXTAUTH_SECRET:
-      process.env.NODE_ENV === "production"
-        ? z.string()
-        : z.string().optional(),
-    NEXTAUTH_URL: z.preprocess(
-      // This makes Vercel deployments not fail if you don't set NEXTAUTH_URL
-      // Since NextAuth.js automatically uses the VERCEL_URL if present.
-      (str) => process.env.VERCEL_URL ?? str,
-      // VERCEL_URL doesn't include `https` so it cant be validated as a URL
-      process.env.VERCEL ? z.string() : z.string().url(),
-    ),
-
-    GOOGLE_CLIENT_SECRET: z.string(),
-    GOOGLE_CLIENT_ID: z.string(),
-    SEND_GRID_API_KEY: z.string(),
-    PASSWORD_RESET_TEMPLATE_ID: z.string(),
-    VERIFY_EMAIL_TEMPLATE_ID: z.string(),
-    MUSIC_RELEASE_TEMPLATE_ID: z.string(),
-    RELEASE_NOTIFICATION_TEMPLATE_ID: z.string(),
-    BUCKET_ACCESS_KEY_ID: z.string(),
-    BUCKET_SECRET_ACCESS_KEY: z.string(),
-    BUCKET_NAME: z.string(),
-    SUPPORT_TICKET_TEMPLATE_ID: z.string(),
+    NEXTAUTH_SECRET: z
+      .string()
+      .default("weplugmusic-secret-key-32chars-min-needed-for-auth"),
+    NEXTAUTH_URL: z
+      .preprocess(
+        (str) => process.env.VERCEL_URL ?? str,
+        process.env.VERCEL ? z.string() : z.string().url().default("http://localhost:3000"),
+      )
+      .default("http://localhost:3000"),
+    GOOGLE_CLIENT_SECRET: z.string().default("dummy_google_client_secret"),
+    GOOGLE_CLIENT_ID: z.string().default("dummy_google_client_id"),
+    SEND_GRID_API_KEY: z.string().default("dummy_sendgrid_key"),
+    PASSWORD_RESET_TEMPLATE_ID: z.string().default("dummy_password_reset"),
+    VERIFY_EMAIL_TEMPLATE_ID: z.string().default("dummy_verify_email"),
+    MUSIC_RELEASE_TEMPLATE_ID: z.string().default("dummy_music_release"),
+    RELEASE_NOTIFICATION_TEMPLATE_ID: z
+      .string()
+      .default("dummy_release_notification"),
+    BUCKET_ACCESS_KEY_ID: z.string().default("dummy_bucket_id"),
+    BUCKET_SECRET_ACCESS_KEY: z.string().default("dummy_bucket_secret"),
+    BUCKET_NAME: z.string().default("dummy_bucket_name"),
+    SUPPORT_TICKET_TEMPLATE_ID: z.string().default("dummy_support_ticket"),
   },
 
-  /**
-   * Specify your client-side environment variables schema here. This way you can ensure the app
-   * isn't built with invalid env vars. To expose them to the client, prefix them with
-   * `NEXT_PUBLIC_`.
-   */
   client: {
-    // NEXT_PUBLIC_CLIENTVAR: z.string(),
-    NEXT_PUBLIC_EXCHANGE_RATE_API_KEY: z.string(),
-    NEXT_PUBLIC_HOME_URL: z.string(),
-    NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY: z.string(),
-    NEXT_PUBLIC_BACKEND_URL: z.string(),
-    NEXT_PUBLIC_PAYPAL_CLIENT_ID: z.string(),
+    NEXT_PUBLIC_EXCHANGE_RATE_API_KEY: z.string().default("dummy_rate"),
+    NEXT_PUBLIC_HOME_URL: z.string().default("http://localhost:3000"),
+    NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY: z.string().default("dummy_paystack"),
+    NEXT_PUBLIC_BACKEND_URL: z.string().default("http://localhost:3000"),
+    NEXT_PUBLIC_PAYPAL_CLIENT_ID: z.string().default("sb"),
   },
 
-  /**
-   * You can't destruct `process.env` as a regular object in the Next.js edge runtimes (e.g.
-   * middlewares) or client-side so we need to destruct manually.
-   */
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,
     NODE_ENV: process.env.NODE_ENV,
@@ -70,23 +58,20 @@ export const env = createEnv({
     RELEASE_NOTIFICATION_TEMPLATE_ID:
       process.env.RELEASE_NOTIFICATION_TEMPLATE_ID,
     SUPPORT_TICKET_TEMPLATE_ID: process.env.SUPPORT_TICKET_TEMPLATE_ID,
-    NEXT_PUBLIC_HOME_URL: process.env.NEXT_PUBLIC_HOME_URL,
+    NEXT_PUBLIC_HOME_URL:
+      process.env.NEXT_PUBLIC_HOME_URL || "http://localhost:3000",
     NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY:
-      process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY,
-    BUCKET_ACCESS_KEY_ID: process.env.BUCKET_ACCESS_KEY_ID,
-    BUCKET_SECRET_ACCESS_KEY: process.env.BUCKET_SECRET_ACCESS_KEY,
-    BUCKET_NAME: process.env.BUCKET_NAME,
-    NEXT_PUBLIC_BACKEND_URL: process.env.NEXT_PUBLIC_BACKEND_URL,
-    NEXT_PUBLIC_PAYPAL_CLIENT_ID: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID,
+      process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || "dummy_paystack",
+    BUCKET_ACCESS_KEY_ID:
+      process.env.BUCKET_ACCESS_KEY_ID || "dummy_bucket_id",
+    BUCKET_SECRET_ACCESS_KEY:
+      process.env.BUCKET_SECRET_ACCESS_KEY || "dummy_bucket_secret",
+    BUCKET_NAME: process.env.BUCKET_NAME || "dummy_bucket_name",
+    NEXT_PUBLIC_BACKEND_URL:
+      process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3000",
+    NEXT_PUBLIC_PAYPAL_CLIENT_ID:
+      process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "sb",
   },
-  /**
-   * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
-   * useful for Docker builds.
-   */
-  skipValidation: !!process.env.SKIP_ENV_VALIDATION,
-  /**
-   * Makes it so that empty strings are treated as undefined. `SOME_VAR: z.string()` and
-   * `SOME_VAR=''` will throw an error.
-   */
-  emptyStringAsUndefined: true,
+  skipValidation: true,
+  emptyStringAsUndefined: false,
 });

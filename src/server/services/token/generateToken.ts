@@ -1,6 +1,6 @@
 import { db } from "@/server/db";
 import crypto from "crypto";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 export const generateEmailVerificationToken = async (email: string) => {
   const token = crypto.randomBytes(20).toString("hex");

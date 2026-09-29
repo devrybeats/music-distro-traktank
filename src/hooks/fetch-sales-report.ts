@@ -27,43 +27,61 @@ interface ICountryReport extends PerformanceMetrics {
 }
 
 export const fetchMonthlyReports = async (userId: string | undefined) => {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/sales-report/month/${userId}`,
-  );
+  try {
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    if (!backendUrl || !userId) return [];
+    const response = await fetch(
+      `${backendUrl}/api/sales-report/month/${userId}`,
+    );
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch streams by audio ID");
+    if (!response.ok) {
+      return [];
+    }
+
+    const monthlySalesReport = (await response.json()) as MonthlyReport[];
+    return monthlySalesReport;
+  } catch (error) {
+    console.warn("fetchMonthlyReports failed:", error);
+    return [];
   }
-
-  const monthlySalesReport = (await response.json()) as MonthlyReport[];
-
-  return monthlySalesReport;
 };
 
 export const fetchReportByStore = async (userId: string | undefined) => {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/sales-report/store/${userId}`,
-  );
+  try {
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    if (!backendUrl || !userId) return [];
+    const response = await fetch(
+      `${backendUrl}/api/sales-report/store/${userId}`,
+    );
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch streams by audio ID");
+    if (!response.ok) {
+      return [];
+    }
+
+    const reportByStore = (await response.json()) as IStoreReport[];
+    return reportByStore;
+  } catch (error) {
+    console.warn("fetchReportByStore failed:", error);
+    return [];
   }
-
-  const reportByStore = (await response.json()) as IStoreReport[];
-
-  return reportByStore;
 };
 
 export const fetchReportByCountry = async (userId: string | undefined) => {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/sales-report/country/${userId}`,
-  );
+  try {
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    if (!backendUrl || !userId) return [];
+    const response = await fetch(
+      `${backendUrl}/api/sales-report/country/${userId}`,
+    );
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch streams by audio ID");
+    if (!response.ok) {
+      return [];
+    }
+
+    const reportByCountry = (await response.json()) as ICountryReport[];
+    return reportByCountry;
+  } catch (error) {
+    console.warn("fetchReportByCountry failed:", error);
+    return [];
   }
-
-  const reportByStore = (await response.json()) as ICountryReport[];
-
-  return reportByStore;
 };

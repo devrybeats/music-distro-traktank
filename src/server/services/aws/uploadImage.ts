@@ -12,6 +12,11 @@ export const uploadImage = async (
   fileName: string,
   image: string,
 ) => {
+  if (!env.BUCKET_NAME || !env.BUCKET_ACCESS_KEY_ID) {
+    console.warn("[AI Studio] AWS S3 bucket not configured — returning image data directly");
+    return image;
+  }
+
   const base64Data = Buffer.from(
     image.replace(/^data:image\/\w+;base64,/, ""),
     "base64",

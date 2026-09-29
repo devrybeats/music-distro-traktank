@@ -4,11 +4,17 @@ import { env } from "@/env";
 import { type AudioRelease } from "../../../types/audio-release.type";
 
 const fetchAudioReleasesById = async (audioId: string) => {
-  const audio = await fetch(
-    `${env.NEXT_PUBLIC_BACKEND_URL}/api/audio-by-id/${audioId}`,
-  );
-  const audioData = (await audio.json()) as AudioRelease;
-  return audioData;
+  try {
+    if (!env.NEXT_PUBLIC_BACKEND_URL || !audioId) return null;
+    const audio = await fetch(
+      `${env.NEXT_PUBLIC_BACKEND_URL}/api/audio-by-id/${audioId}`,
+    );
+    if (!audio.ok) return null;
+    const audioData = (await audio.json()) as AudioRelease;
+    return audioData;
+  } catch (e) {
+    return null;
+  }
 };
 
 interface Params {

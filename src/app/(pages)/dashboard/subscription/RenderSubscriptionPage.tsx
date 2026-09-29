@@ -39,7 +39,6 @@ const RenderSubscriptionPage = ({
 
   const handleAddToCart = async (item: CartItem) => {
     if (
-      userSubscription &&
       userSubscription?.expiresAt &&
       userSubscription.expiresAt > new Date()
     ) {
